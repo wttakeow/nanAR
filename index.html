@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <!--
     If you are serving your web app in a path other than the root, change the
@@ -15,84 +16,154 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
-
+  <meta name="description" content="เรือน่าน">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- iOS meta tags & icons -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="arprototype">
-  <link rel="apple-touch-icon" href="nanAR/icons/Icon-192.png">
+  <meta http-equiv="Content-Security-Policy" content="
+                            default-src * data: blob: ws: wss: gap://ready file://*;
+                            style-src * 'unsafe-inline'; 
+                            script-src * 'unsafe-inline' 'unsafe-eval';
+                            connect-src * ws: wss: blob:;">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <style>
+    :not(:defined)>* {
+      display: none;
+    }
 
-  <title>arprototype</title>
-  <link rel="manifest" href="/nanAR/manifest.json">
-</head>
-<body>
-  <!-- This script installs service_worker.js to provide PWA functionality to
-       application. For more information, see:
-       https://developers.google.com/web/fundamentals/primers/service-workers -->
-  <script>
-    var serviceWorkerVersion = '436586070';
-    var scriptLoaded = false;
-    function loadMainDartJs() {
-      if (scriptLoaded) {
-        return;
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    model-viewer {
+      width: 100%;
+      height: 90%;
+      background-color: #ffffff;
+    }
+
+
+    .progress-bar {
+      display: block;
+      width: 33%;
+      height: 10%;
+      max-height: 2%;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate3d(-50%, -50%, 0);
+      border-radius: 25px;
+      box-shadow: 0px 3px 10px 3px rgba(0, 0, 0, 0.5), 0px 0px 5px 1px rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .progress-bar.hide {
+      visibility: hidden;
+      transition: visibility 0.3s;
+    }
+
+    .update-bar {
+      background-color: rgba(255, 255, 255, 0.9);
+      width: 0%;
+      height: 100%;
+      border-radius: 25px;
+      float: left;
+      transition: width 0.3s;
+    }
+
+    #ar-button {
+      background-repeat: no-repeat;
+      background-size: 20px 20px;
+      background-position: 12px 50%;
+      background-color: #fff;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
+      bottom: 16px;
+      padding: 0px 16px 0px 40px;
+      font-family: Roboto Regular, Helvetica Neue, sans-serif;
+      font-size: 14px;
+      color: #4285f4;
+      height: 36px;
+      line-height: 36px;
+      border-radius: 18px;
+      border: 1px solid #DADCE0;
+    }
+
+    #ar-button:active {
+      background-color: #E8EAED;
+    }
+
+    #ar-button:focus {
+      outline: none;
+    }
+
+    #ar-button:focus-visible {
+      outline: 1px solid #4285f4;
+    }
+
+    @keyframes circle {
+      from {
+        transform: translateX(-50%) rotate(0deg) translateX(50px) rotate(0deg);
       }
-      scriptLoaded = true;
-      var scriptTag = document.createElement('script');
-      scriptTag.src = 'nanAR/main.dart.js';
-      scriptTag.type = 'application/javascript';
-      document.body.append(scriptTag);
+
+      to {
+        transform: translateX(-50%) rotate(360deg) translateX(50px) rotate(-360deg);
+      }
     }
 
-    if ('serviceWorker' in navigator) {
-      // Service workers are supported. Use them.
-      window.addEventListener('load', function () {
-        // Wait for registration to finish before dropping the <script> tag.
-        // Otherwise, the browser will load the script multiple times,
-        // potentially different versions.
-        var serviceWorkerUrl = 'flutter_service_worker.js?v=' + serviceWorkerVersion;
-        navigator.serviceWorker.register(serviceWorkerUrl)
-          .then((reg) => {
-            function waitForActivation(serviceWorker) {
-              serviceWorker.addEventListener('statechange', () => {
-                if (serviceWorker.state == 'activated') {
-                  console.log('Installed new service worker.');
-                  loadMainDartJs();
-                }
-              });
-            }
-            if (!reg.active && (reg.installing || reg.waiting)) {
-              // No active web worker and we have installed or are installing
-              // one for the first time. Simply wait for it to activate.
-              waitForActivation(reg.installing ?? reg.waiting);
-            } else if (!reg.active.scriptURL.endsWith(serviceWorkerVersion)) {
-              // When the app updates the serviceWorkerVersion changes, so we
-              // need to ask the service worker to update.
-              console.log('New service worker available.');
-              reg.update();
-              waitForActivation(reg.installing);
-            } else {
-              // Existing service worker is still good.
-              console.log('Loading app from service worker.');
-              loadMainDartJs();
-            }
-          });
+    @keyframes elongate {
+      from {
+        transform: translateX(100px);
+      }
 
-        // If service worker doesn't succeed in a reasonable amount of time,
-        // fallback to plaint <script> tag.
-        setTimeout(() => {
-          if (!scriptLoaded) {
-            console.warn(
-              'Failed to load app from service worker. Falling back to plain <script> tag.',
-            );
-            loadMainDartJs();
-          }
-        }, 4000);
-      });
-    } else {
-      // Service workers not supported. Just drop the <script> tag.
-      loadMainDartJs();
+      to {
+        transform: translateX(-100px);
+      }
     }
-  </script>
+
+    model-viewer>#ar-prompt {
+      position: absolute;
+      left: 50%;
+      bottom: 60px;
+      animation: elongate 2s infinite ease-in-out alternate;
+      display: none;
+    }
+
+    model-viewer[ar-status="session-started"]>#ar-prompt {
+      display: block;
+    }
+
+    model-viewer>#ar-prompt>img {
+      animation: circle 4s linear infinite;
+    }
+  </style>
+  <script src="https://unpkg.com/focus-visible@5.0.2/dist/focus-visible.js" defer></script>
+
+  <title>เรือน่าน</title>
+
+</head>
+
+<body>
+
+  <body>
+    <!-- <model-viewer> HTML element -->
+    <model-viewer src="/nanAR/src/epicboat.gltf" ar ar-modes="webxr scene-viewer quick-look" camera-controls
+      environment-image="neutral" poster="/nanAR/src/poster.webp" shadow-intensity="1">
+      <button slot="ar-button" id="ar-button">
+        ตัวอย่างหัวเรือ3มิติ
+      </button>
+    </model-viewer>
+    <!-- Loads <model-viewer> for browsers: -->
+    <script type="module" src="https://unpkg.com/@google/model-viewer@v1.9.0/dist/model-viewer.min.js"></script>
+  </body>
+
 </body>
+
 </html>
